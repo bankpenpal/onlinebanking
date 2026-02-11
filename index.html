@@ -1002,3 +1002,35 @@
     </script>
 </body>
 </html>
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PenPal Payment Processor</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Welcome to PenPal Payment Processor</h1>
+
+    <form id="payment-form">
+        <label for="amount">Amount:</label>
+        <input type="text" id="amount" required>
+
+        <label for="card-number">Card Number:</label>
+        <input type="text" id="card-number" required>
+
+        <label for="expiry-date">Expiry Date:</label>
+        <input type="text" id="expiry-date" placeholder="MM/YY" required>
+
+        <label for="cvv">CVV:</label>
+        <input type="text" id="cvv" required>
+
+        <button type="submit">Process Payment</button>
+    </form>
+
+    <script src="script.js"></script>
+</body>
+</html>
