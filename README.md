@@ -1,2 +1,2 @@
 # onlinebanking
-Pen Pal Bank: Online Banking
+PenPal Bank: Online Banking
