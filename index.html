@@ -33,7 +33,63 @@
         }
         </style>
     <h2>PENPAL BANK</h2>
-    <P>TOP NEWS </P>
+    <style>
+.stg-container {
+  overflow: hidden;
+  background: #edb007;
+  padding: 10px;
+  border-radius: 0px;
+  
+  display: flex; flex-direction: column; gap: 0px;
+}
+
+@keyframes stg-b0-typewriter { from { width: 0; } to { width: 100%; } }
+@keyframes stg-b0-blink { 50% { border-color: transparent; } }
+
+.stg-block-0 {
+  overflow: hidden;
+  background: transparent;
+}
+.stg-block-0 .stg-text {
+  color: #776e37;
+  font-size: 16px;
+  font-family: 'Times New Roman', serif;
+  overflow: hidden;
+  white-space: nowrap;
+  border-right: 3px solid currentColor;
+  width: 0;
+  animation: stg-b0-typewriter 10s steps(40, end) infinite alternate, stg-b0-blink 0.75s step-end infinite;
+  display: inline-flex;
+  align-items: center;
+}
+.stg-block-0 .stg-text:hover { animation-play-state: paused; }
+
+@keyframes stg-b1-zoom { 0% { transform: translateX(100%) scale(0.3); opacity: 0; } 20% { opacity: 1; transform: translateX(40%) scale(1); } 80% { opacity: 1; transform: translateX(-40%) scale(1); } 100% { transform: translateX(-100%) scale(0.3); opacity: 0; } }
+
+.stg-block-1 {
+  overflow: hidden;
+  background: transparent;
+}
+.stg-block-1 .stg-text {
+  color: #cc339e;
+  font-size: 16px;
+  font-family: Georgia, serif;
+  animation: stg-b1-zoom 30s ease-out infinite;
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+}
+.stg-block-1 .stg-text:hover { animation-play-state: paused; }
+</style>
+
+<div class="stg-container">
+  <div class="stg-block-0">
+    <div class="stg-text">PENPAL BANK -  NEW CUSTOMERS CAN OPEN AN ACCOUNT WITH PENPAL BANK!</div>
+  </div>
+  <div class="stg-block-1">
+    <div class="stg-text">Welcome to Penpal Bank! Penpal Bank Top News...</div>
+  </div>
+</div>
 
 </head>
     <body>
