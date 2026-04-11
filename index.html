@@ -1,33 +1,77 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Recovery</title>
+    <title>Login & Signup Implementation</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
+        .container { max-width: 400px; margin: auto; }
+        form { display: none; }
+        form.active { display: block; }
+        .tab { padding: 10px; cursor: pointer; }
+        .tab.active { background-color: #007bff; color: white; }
+        input { width: 100%; padding: 10px; margin-bottom: 10px; }
+        button { width: 100%; padding: 10px; background-color: #007bff; color: white; border: none; }
+        .message { color: red; }
+    </style>
 </head>
 <body>
-    <h1>Login Recovery</h1>
-    <form id="recoveryForm">
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" required>
-        <br>
-        <label for="securityQuestion">Security Question:</label>
-        <select id="securityQuestion" name="securityQuestion" required>
-            <option value="pet">What was your first pet's name?</option>
-            <option value="school">What was the name of your elementary school?</option>
-            <option value="mother">What is your mother's maiden name?</option>
-        </select>
-        <input type="text" id="securityAnswer" name="securityAnswer" placeholder="Answer" required>
-        <br>
-        <input type="submit" value="Reset Password">
-    </form>
-
+    <div class="container">
+        <h2>Login & Signup</h2>
+        <div class="tabs">
+            <div class="tab" id="login-tab">Login</div>
+            <div class="tab" id="signup-tab">Signup</div>
+        </div>
+        <form id="login-form" class="active">
+            <input type="text" placeholder="Email" id="login-email" required>
+            <input type="password" placeholder="Password" id="login-password" required>
+            <button type="submit">Login</button>
+            <div class="message" id="login-message"></div>
+        </form>
+        <form id="signup-form">
+            <input type="text" placeholder="Name" id="signup-name" required>
+            <input type="email" placeholder="Email" id="signup-email" required>
+            <input type="password" placeholder="Password" id="signup-password" required>
+            <button type="submit">Signup</button>
+            <div class="message" id="signup-message"></div>
+        </form>
+    </div>
     <script>
-        document.getElementById('recoveryForm').onsubmit = function(event) {
-            event.preventDefault();
-            // Handle form submission, validate inputs and send verification email
-            // This is just a placeholder for the actual implementation
-            alert('A verification email has been sent, please check your inbox!');
+        const loginTab = document.getElementById('login-tab');
+        const signupTab = document.getElementById('signup-tab');
+        const loginForm = document.getElementById('login-form');
+        const signupForm = document.getElementById('signup-form');
+
+        loginTab.onclick = function() {
+            loginTab.classList.add('active');
+            signupTab.classList.remove('active');
+            loginForm.classList.add('active');
+            signupForm.classList.remove('active');
+        };
+
+        signupTab.onclick = function() {
+            signupTab.classList.add('active');
+            loginTab.classList.remove('active');
+            signupForm.classList.add('active');
+            loginForm.classList.remove('active');
+        };
+
+        loginForm.onsubmit = function(e) {
+            e.preventDefault();
+            // Put your login logic here
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            document.getElementById('login-message').innerText = 'Login successful for ' + email;
+        };
+
+        signupForm.onsubmit = function(e) {
+            e.preventDefault();
+            // Put your signup logic here
+            const name = document.getElementById('signup-name').value;
+            const email = document.getElementById('signup-email').value;
+            const password = document.getElementById('signup-password').value;
+            document.getElementById('signup-message').innerText = 'Signup successful for ' + name;
         };
     </script>
 </body>
