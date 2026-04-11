@@ -1,50 +1,34 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Online Banking</title>
+    <title>Login Recovery</title>
 </head>
 <body>
-    <h1>Login</h1>
-    <form id="login-form">
-        <input type="text" placeholder="Username" required>
-        <input type="password" placeholder="Password" required>
-        <button type="submit">Login</button>
-        <a href="#" id="forgot-password">Forgot Password?</a>
+    <h1>Login Recovery</h1>
+    <form id="recoveryForm">
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+        <br>
+        <label for="securityQuestion">Security Question:</label>
+        <select id="securityQuestion" name="securityQuestion" required>
+            <option value="pet">What was your first pet's name?</option>
+            <option value="school">What was the name of your elementary school?</option>
+            <option value="mother">What is your mother's maiden name?</option>
+        </select>
+        <input type="text" id="securityAnswer" name="securityAnswer" placeholder="Answer" required>
+        <br>
+        <input type="submit" value="Reset Password">
     </form>
 
-    <div id="recovery-form" style="display: none;">
-        <h2>Password Recovery</h2>
-        <form>
-            <label for="security-question">Select a Security Question:</label>
-            <select id="security-question" required>
-                <option value="pet">What is your pet's name?</option>
-                <option value="mother-maiden">What is your mother's maiden name?</option>
-                <option value="birth-city">In what city were you born?</option>
-            </select>
-            <input type="text" placeholder="Your Answer" required>
-            <button type="submit">Recover Password</button>
-        </form>
-    </div>
-
-    <div id="dashboard">
-        <h2>Main Menu</h2>
-        <nav>
-            <ul>
-                <li><a href="#account">Account Overview</a></li>
-                <li><a href="#transfer">Transfer Funds</a></li>
-                <li><a href="#payments">Payments</a></li>
-                <li><a href="#support">Support</a></li>
-            </ul>
-        </nav>
-    </div>
-
     <script>
-        document.getElementById('forgot-password').addEventListener('click', function(event) {
+        document.getElementById('recoveryForm').onsubmit = function(event) {
             event.preventDefault();
-            document.getElementById('recovery-form').style.display = 'block';
-        });
+            // Handle form submission, validate inputs and send verification email
+            // This is just a placeholder for the actual implementation
+            alert('A verification email has been sent, please check your inbox!');
+        };
     </script>
 </body>
 </html>
