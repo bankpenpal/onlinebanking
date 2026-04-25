@@ -236,9 +236,1199 @@
 </body>
 </html>
 
+
+    <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bank Penpal - Online Banking & Prepaid Cards</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://js.stripe.com/v3/"></script>
+    <style>
+        :root {
+            --primary-color: #007bff;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+            --dark-color: #343a40;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .navbar-custom {
+            background: linear-gradient(90deg, var(--dark-color) 0%, #1f3a70 100%);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .container-custom {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            padding: 30px;
+            margin: 20px auto;
+            max-width: 1000px;
+        }
+
+        .card-custom {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .card-custom:hover {
+            transform: translateY(-5px);
+        }
+
+        .nav-tabs .nav-link.active {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+        }
+
+        .nav-tabs .nav-link {
+            color: var(--primary-color);
+            border: none;
+            border-bottom: 3px solid transparent;
+        }
+
+        .form-control, .form-select {
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            padding: 12px 15px;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
+        }
+
+        .btn-custom {
+            border-radius: 8px;
+            padding: 12px 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary-custom {
+            background: var(--primary-color);
+            border: none;
+        }
+
+        .btn-primary-custom:hover {
+            background: #0056b3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,123,255,0.4);
+        }
+
+        .alert-custom {
+            border-radius: 8px;
+            border: none;
+            margin-bottom: 20px;
+        }
+
+        .prepaid-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+
+        .card-number {
+            font-family: 'Courier New', monospace;
+            font-size: 1.3em;
+            letter-spacing: 2px;
+            margin: 15px 0;
+        }
+
+        .card-details {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            font-size: 0.9em;
+        }
+
+        .balance-display {
+            font-size: 2em;
+            font-weight: bold;
+            color: var(--success-color);
+            margin: 15px 0;
+        }
+
+        .transaction-item {
+            border-left: 4px solid var(--primary-color);
+            padding-left: 15px;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .transaction-item.credit {
+            border-left-color: var(--success-color);
+        }
+
+        .transaction-item.debit {
+            border-left-color: var(--danger-color);
+        }
+
+        .spinner-custom {
+            display: inline-block;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .modal-custom .modal-content {
+            border-radius: 15px;
+            border: none;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .modal-custom .modal-header {
+            background: linear-gradient(90deg, var(--primary-color) 0%, #0056b3 100%);
+            color: white;
+            border: none;
+            border-radius: 15px 15px 0 0;
+        }
+
+        .tab-content {
+            margin-top: 20px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background: rgba(40, 167, 69, 0.2);
+            color: var(--success-color);
+        }
+
+        .status-inactive {
+            background: rgba(220, 53, 69, 0.2);
+            color: var(--danger-color);
+        }
+
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .loading-overlay.active {
+            display: flex;
+        }
+
+        .spinner-border-custom {
+            width: 50px;
+            height: 50px;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="#">🏦 Bank Penpal</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <span class="nav-link" id="user-display">Not Logged In</span>
+                    </li>
+                    <li class="nav-item">
+                        <button class="btn btn-outline-light btn-sm" id="logout-btn" style="display:none;">Logout</button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner-border spinner-border-custom" role="status"></div>
+    </div>
+
+    <div class="container-custom">
+        <!-- Authentication Section -->
+        <div id="auth-section">
+            <h2 class="mb-4">Welcome to Bank Penpal</h2>
+            <ul class="nav nav-tabs" role="tablist">
+                <li class="nav-item">
+                    <button class="nav-link active" id="login-tab" data-bs-toggle="tab" data-bs-target="#login-form-tab" type="button">Login</button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" id="signup-tab" data-bs-toggle="tab" data-bs-target="#signup-form-tab" type="button">Sign Up</button>
+                </li>
+            </ul>
+
+            <div class="tab-content">
+                <!-- Login Tab -->
+                <div class="tab-pane fade show active" id="login-form-tab">
+                    <form id="login-form" class="mt-4">
+                        <div class="mb-3">
+                            <label for="login-email" class="form-label">Email Address</label>
+                            <input type="email" class="form-control" id="login-email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="login-password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="login-password" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-custom btn-primary-custom w-100">Login</button>
+                        <div id="login-message" class="alert alert-custom mt-3" style="display:none;"></div>
+                    </form>
+                </div>
+
+                <!-- Signup Tab -->
+                <div class="tab-pane fade" id="signup-form-tab">
+                    <form id="signup-form" class="mt-4">
+                        <div class="mb-3">
+                            <label for="signup-name" class="form-label">Full Name</label>
+                            <input type="text" class="form-control" id="signup-name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="signup-email" class="form-label">Email Address</label>
+                            <input type="email" class="form-control" id="signup-email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="signup-phone" class="form-label">Phone Number</label>
+                            <input type="tel" class="form-control" id="signup-phone" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="signup-password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="signup-password" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="signup-password-confirm" class="form-label">Confirm Password</label>
+                            <input type="password" class="form-control" id="signup-password-confirm" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-custom btn-primary-custom w-100">Create Account</button>
+                        <div id="signup-message" class="alert alert-custom mt-3" style="display:none;"></div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Dashboard (Hidden until logged in) -->
+        <div id="dashboard-section" style="display:none;">
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <h2>Welcome, <span id="user-name">User</span>!</h2>
+                </div>
+                <div class="col-md-6 text-end">
+                    <div class="balance-display">
+                        Balance: $<span id="account-balance">0.00</span>
+                    </div>
+                </div>
+            </div>
+
+            <ul class="nav nav-tabs" role="tablist">
+                <li class="nav-item">
+                    <button class="nav-link active" id="cards-tab" data-bs-toggle="tab" data-bs-target="#cards-section" type="button">My Cards</button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" id="issue-tab" data-bs-toggle="tab" data-bs-target="#issue-section" type="button">Issue New Card</button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" id="transactions-tab" data-bs-toggle="tab" data-bs-target="#transactions-section" type="button">Transactions</button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" id="fund-tab" data-bs-toggle="tab" data-bs-target="#fund-section" type="button">Add Funds</button>
+                </li>
+            </ul>
+
+            <div class="tab-content">
+                <!-- My Cards Tab -->
+                <div class="tab-pane fade show active" id="cards-section">
+                    <div class="mt-4">
+                        <h4>Your Prepaid Cards</h4>
+                        <div id="cards-list"></div>
+                    </div>
+                </div>
+
+                <!-- Issue New Card Tab -->
+                <div class="tab-pane fade" id="issue-section">
+                    <form id="issue-card-form" class="mt-4">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="card-name" class="form-label">Card Name</label>
+                                    <input type="text" class="form-control" id="card-name" placeholder="e.g., My Travel Card" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="card-type" class="form-label">Card Type</label>
+                                    <select class="form-select" id="card-type" required>
+                                        <option value="">Select Card Type</option>
+                                        <option value="visa">Visa Prepaid</option>
+                                        <option value="mastercard">Mastercard Prepaid</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="initial-load" class="form-label">Initial Load Amount</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        <input type="number" class="form-control" id="initial-load" step="0.01" min="10" max="5000" placeholder="100.00" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="card-currency" class="form-label">Currency</label>
+                                    <select class="form-select" id="card-currency" required>
+                                        <option value="USD">USD ($)</option>
+                                        <option value="EUR">EUR (€)</option>
+                                        <option value="GBP">GBP (£)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Billing Address</label>
+                            <div class="mb-2">
+                                <input type="text" class="form-control" id="billing-street" placeholder="Street Address" required>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <input type="text" class="form-control" id="billing-city" placeholder="City" required>
+                                </div>
+                                <div class="col-md-3">
+                                    <input type="text" class="form-control" id="billing-state" placeholder="State" required>
+                                </div>
+                                <div class="col-md-3">
+                                    <input type="text" class="form-control" id="billing-zip" placeholder="ZIP Code" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <h5>Payment Method</h5>
+                            <div id="card-element" class="form-control" style="height: 40px; padding-top: 10px;"></div>
+                            <div id="card-errors" class="alert alert-danger mt-2" style="display:none;"></div>
+                        </div>
+
+                        <button type="submit" class="btn btn-success btn-custom w-100" style="padding: 15px;">
+                            <span id="issue-btn-text">Issue Card & Load Funds</span>
+                            <span id="issue-btn-loader" style="display:none;" class="spinner-custom">
+                                <span class="spinner-border spinner-border-sm ms-2"></span>
+                            </span>
+                        </button>
+                        <div id="issue-message" class="alert alert-custom mt-3" style="display:none;"></div>
+                    </form>
+                </div>
+
+                <!-- Transactions Tab -->
+                <div class="tab-pane fade" id="transactions-section">
+                    <div class="mt-4">
+                        <h4>Transaction History</h4>
+                        <div id="transaction-history"></div>
+                    </div>
+                </div>
+
+                <!-- Add Funds Tab -->
+                <div class="tab-pane fade" id="fund-section">
+                    <form id="add-funds-form" class="mt-4">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="fund-card-select" class="form-label">Select Card</label>
+                                    <select class="form-select" id="fund-card-select" required>
+                                        <option value="">Choose a card...</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="fund-amount" class="form-label">Amount to Add</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        <input type="number" class="form-control" id="fund-amount" step="0.01" min="10" max="2000" placeholder="100.00" required>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <h5>Payment Method</h5>
+                            <div id="fund-card-element" class="form-control" style="height: 40px; padding-top: 10px;"></div>
+                            <div id="fund-card-errors" class="alert alert-danger mt-2" style="display:none;"></div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-custom btn-primary-custom w-100" style="padding: 15px;">
+                            <span id="fund-btn-text">Add Funds</span>
+                            <span id="fund-btn-loader" style="display:none;" class="spinner-custom">
+                                <span class="spinner-border spinner-border-sm ms-2"></span>
+                            </span>
+                        </button>
+                        <div id="fund-message" class="alert alert-custom mt-3" style="display:none;"></div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- App Script -->
+    <script src="app.js"></script>
+</body>
+</html>
+
+// ============================================
+// Bank Penpal - Prepaid Card System
+// Live Mode with Real Money Processing
+// ============================================
+
+const STRIPE_PUBLIC_KEY = 'pk_live_YOUR_STRIPE_PUBLIC_KEY'; // Replace with your live public key
+const API_BASE_URL = 'https://api.bankpenpal.com'; // Replace with your backend API
+
+// Initialize Stripe
+const stripe = Stripe(STRIPE_PUBLIC_KEY);
+const elements = stripe.elements();
+
+// State Management
+const appState = {
+    currentUser: null,
+    cards: [],
+    transactions: [],
+    accountBalance: 0
+};
+
+// ============================================
+// Stripe Elements Setup
+// ============================================
+let cardElement;
+let fundCardElement;
+
+function initializeStripeElements() {
+    // Issue Card - Card Element
+    cardElement = elements.create('card', {
+        style: {
+            base: {
+                fontSize: '16px',
+                color: '#424242',
+                fontFamily: '"Segoe UI", Tahoma, Geneva, Verdana, sans-serif'
+            },
+            invalid: {
+                color: '#dc3545'
+            }
+        }
+    });
+    cardElement.mount('#card-element');
+
+    // Fund Card - Card Element
+    fundCardElement = elements.create('card', {
+        style: {
+            base: {
+                fontSize: '16px',
+                color: '#424242',
+                fontFamily: '"Segoe UI", Tahoma, Geneva, Verdana, sans-serif'
+            },
+            invalid: {
+                color: '#dc3545'
+            }
+        }
+    });
+    fundCardElement.mount('#fund-card-element');
+
+    // Card Error Listeners
+    cardElement.on('change', function(event) {
+        displayError('card-errors', event);
+    });
+
+    fundCardElement.on('change', function(event) {
+        displayError('fund-card-errors', event);
+    });
+}
+
+function displayError(elementId, event) {
+    const displayError = document.getElementById(elementId);
+    if (event.error) {
+        displayError.textContent = event.error.message;
+        displayError.style.display = 'block';
+    } else {
+        displayError.textContent = '';
+        displayError.style.display = 'none';
+    }
+}
+
+// ============================================
+// Authentication Functions
+// ============================================
+
+document.getElementById('login-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('login-email').value;
+    const password = document.getElementById('login-password').value;
+
+    try {
+        showLoading(true);
+        
+        // Call backend authentication
+        const response = await fetch(`${API_BASE_URL}/auth/login`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ email, password })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            appState.currentUser = data.user;
+            localStorage.setItem('authToken', data.token);
+            localStorage.setItem('userId', data.user.id);
+            
+            await loadUserData();
+            showAuthSection(false);
+            showSuccessMessage('login-message', `Welcome back, ${data.user.name}!`);
+            
+            setTimeout(() => {
+                document.getElementById('auth-section').style.display = 'none';
+                document.getElementById('dashboard-section').style.display = 'block';
+            }, 1000);
+        } else {
+            showErrorMessage('login-message', data.message || 'Login failed');
+        }
+    } catch (error) {
+        showErrorMessage('login-message', 'Network error: ' + error.message);
+    } finally {
+        showLoading(false);
+    }
+});
+
+document.getElementById('signup-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const name = document.getElementById('signup-name').value;
+    const email = document.getElementById('signup-email').value;
+    const phone = document.getElementById('signup-phone').value;
+    const password = document.getElementById('signup-password').value;
+    const passwordConfirm = document.getElementById('signup-password-confirm').value;
+
+    if (password !== passwordConfirm) {
+        showErrorMessage('signup-message', 'Passwords do not match');
+        return;
+    }
+
+    if (password.length < 8) {
+        showErrorMessage('signup-message', 'Password must be at least 8 characters');
+        return;
+    }
+
+    try {
+        showLoading(true);
+
+        const response = await fetch(`${API_BASE_URL}/auth/signup`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ name, email, phone, password })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            appState.currentUser = data.user;
+            localStorage.setItem('authToken', data.token);
+            localStorage.setItem('userId', data.user.id);
+            
+            await loadUserData();
+            showSuccessMessage('signup-message', 'Account created successfully!');
+            
+            setTimeout(() => {
+                document.getElementById('auth-section').style.display = 'none';
+                document.getElementById('dashboard-section').style.display = 'block';
+            }, 1500);
+        } else {
+            showErrorMessage('signup-message', data.message || 'Signup failed');
+        }
+    } catch (error) {
+        showErrorMessage('signup-message', 'Network error: ' + error.message);
+    } finally {
+        showLoading(false);
+    }
+});
+
+// ============================================
+// Card Issuance Functions
+// ============================================
+
+document.getElementById('issue-card-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const cardName = document.getElementById('card-name').value;
+    const cardType = document.getElementById('card-type').value;
+    const initialLoad = parseFloat(document.getElementById('initial-load').value);
+    const currency = document.getElementById('card-currency').value;
+    const billingStreet = document.getElementById('billing-street').value;
+    const billingCity = document.getElementById('billing-city').value;
+    const billingState = document.getElementById('billing-state').value;
+    const billingZip = document.getElementById('billing-zip').value;
+
+    if (initialLoad < 10 || initialLoad > 5000) {
+        showErrorMessage('issue-message', 'Initial load must be between $10 and $5000');
+        return;
+    }
+
+    try {
+        showLoading(true);
+        document.getElementById('issue-btn-text').style.display = 'none';
+        document.getElementById('issue-btn-loader').style.display = 'inline';
+
+        // Create Payment Method with Stripe
+        const { paymentMethod, error } = await stripe.createPaymentMethod({
+            type: 'card',
+            card: cardElement,
+            billing_details: {
+                name: appState.currentUser.name,
+                address: {
+                    line1: billingStreet,
+                    city: billingCity,
+                    state: billingState,
+                    postal_code: billingZip
+                }
+            }
+        });
+
+        if (error) {
+            showErrorMessage('issue-message', error.message);
+            document.getElementById('issue-btn-text').style.display = 'inline';
+            document.getElementById('issue-btn-loader').style.display = 'none';
+            showLoading(false);
+            return;
+        }
+
+        // Call backend to issue card
+        const response = await fetch(`${API_BASE_URL}/cards/issue`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+            },
+            body: JSON.stringify({
+                cardName,
+                cardType,
+                initialLoad,
+                currency,
+                billingAddress: {
+                    street: billingStreet,
+                    city: billingCity,
+                    state: billingState,
+                    zip: billingZip
+                },
+                paymentMethodId: paymentMethod.id,
+                userId: localStorage.getItem('userId')
+            })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            showSuccessMessage('issue-message', `Card issued successfully! Card ending in ${data.card.last4}`);
+            
+            // Clear form
+            document.getElementById('issue-card-form').reset();
+            cardElement.clear();
+            
+            // Reload user data
+            await loadUserData();
+            
+            setTimeout(() => {
+                document.getElementById('cards-tab').click();
+            }, 2000);
+        } else {
+            showErrorMessage('issue-message', data.message || 'Card issuance failed');
+        }
+    } catch (error) {
+        showErrorMessage('issue-message', 'Error: ' + error.message);
+    } finally {
+        showLoading(false);
+        document.getElementById('issue-btn-text').style.display = 'inline';
+        document.getElementById('issue-btn-loader').style.display = 'none';
+    }
+});
+
+// ============================================
+// Add Funds Functions
+// ============================================
+
+document.getElementById('add-funds-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const cardId = document.getElementById('fund-card-select').value;
+    const amount = parseFloat(document.getElementById('fund-amount').value);
+
+    if (!cardId) {
+        showErrorMessage('fund-message', 'Please select a card');
+        return;
+    }
+
+    if (amount < 10 || amount > 2000) {
+        showErrorMessage('fund-message', 'Amount must be between $10 and $2000');
+        return;
+    }
+
+    try {
+        showLoading(true);
+        document.getElementById('fund-btn-text').style.display = 'none';
+        document.getElementById('fund-btn-loader').style.display = 'inline';
+
+        // Create Payment Method
+        const { paymentMethod, error } = await stripe.createPaymentMethod({
+            type: 'card',
+            card: fundCardElement
+        });
+
+        if (error) {
+            showErrorMessage('fund-message', error.message);
+            document.getElementById('fund-btn-text').style.display = 'inline';
+            document.getElementById('fund-btn-loader').style.display = 'none';
+            showLoading(false);
+            return;
+        }
+
+        // Call backend to add funds
+        const response = await fetch(`${API_BASE_URL}/cards/add-funds`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+            },
+            body: JSON.stringify({
+                cardId,
+                amount,
+                paymentMethodId: paymentMethod.id,
+                userId: localStorage.getItem('userId')
+            })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            showSuccessMessage('fund-message', `Successfully added $${amount.toFixed(2)} to your card!`);
+            
+            document.getElementById('add-funds-form').reset();
+            fundCardElement.clear();
+            
+            await loadUserData();
+            
+            setTimeout(() => {
+                document.getElementById('fund-message').style.display = 'none';
+            }, 3000);
+        } else {
+            showErrorMessage('fund-message', data.message || 'Failed to add funds');
+        }
+    } catch (error) {
+        showErrorMessage('fund-message', 'Error: ' + error.message);
+    } finally {
+        showLoading(false);
+        document.getElementById('fund-btn-text').style.display = 'inline';
+        document.getElementById('fund-btn-loader').style.display = 'none';
+    }
+});
+
+// ============================================
+// Load User Data
+// ============================================
+
+async function loadUserData() {
+    try {
+        const userId = localStorage.getItem('userId');
+        const token = localStorage.getItem('authToken');
+
+        // Fetch user cards
+        const cardsResponse = await fetch(`${API_BASE_URL}/cards/list?userId=${userId}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        const cardsData = await cardsResponse.json();
+        if (cardsResponse.ok) {
+            appState.cards = cardsData.cards;
+            displayCards();
+            populateFundCardsSelect();
+        }
+
+        // Fetch user balance
+        const balanceResponse = await fetch(`${API_BASE_URL}/user/balance?userId=${userId}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        const balanceData = await balanceResponse.json();
+        if (balanceResponse.ok) {
+            appState.accountBalance = balanceData.balance;
+            document.getElementById('account-balance').textContent = appState.accountBalance.toFixed(2);
+        }
+
+        // Fetch transactions
+        const transResponse = await fetch(`${API_BASE_URL}/transactions/list?userId=${userId}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        const transData = await transResponse.json();
+        if (transResponse.ok) {
+            appState.transactions = transData.transactions;
+            displayTransactions();
+        }
+
+        // Update user display
+        document.getElementById('user-name').textContent = appState.currentUser.name;
+        document.getElementById('user-display').textContent = appState.currentUser.email;
+    } catch (error) {
+        console.error('Error loading user data:', error);
+    }
+}
+
+// ============================================
+// Display Functions
+// ============================================
+
+function displayCards() {
+    const cardsList = document.getElementById('cards-list');
+    
+    if (appState.cards.length === 0) {
+        cardsList.innerHTML = '<p class="text-muted">No cards yet. Create your first prepaid card!</p>';
+        return;
+    }
+
+    cardsList.innerHTML = appState.cards.map(card => `
+        <div class="card-custom">
+            <div class="prepaid-card">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h5>${card.name}</h5>
+                        <p class="text-white-50 mb-0">${card.type.toUpperCase()}</p>
+                    </div>
+                    <span class="status-badge ${card.status === 'active' ? 'status-active' : 'status-inactive'}">
+                        ${card.status.toUpperCase()}
+                    </span>
+                </div>
+                
+                <div class="card-number">
+                    •••• •••• •••• ${card.last4}
+                </div>
+                
+                <div class="card-details">
+                    <div>
+                        <small>CARD HOLDER</small>
+                        <p>${appState.currentUser.name}</p>
+                    </div>
+                    <div>
+                        <small>EXPIRES</small>
+                        <p>${card.expiry}</p>
+                    </div>
+                    <div>
+                        <small>CVV</small>
+                        <p>•••</p>
+                    </div>
+                </div>
+                
+                <div class="mt-3">
+                    <small>CARD BALANCE</small>
+                    <div style="font-size: 1.5em; font-weight: bold;">
+                        ${card.currency} ${card.balance.toFixed(2)}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="p-3 bg-light rounded">
+                <div class="row">
+                    <div class="col-6">
+                        <button class="btn btn-sm btn-primary-custom btn-custom" onclick="freezeCard('${card.id}')">
+                            ${card.isFrozen ? 'Unfreeze' : 'Freeze'} Card
+                        </button>
+                    </div>
+                    <div class="col-6 text-end">
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteCard('${card.id}')">
+                            Delete Card
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function displayTransactions() {
+    const transHistory = document.getElementById('transaction-history');
+    
+    if (appState.transactions.length === 0) {
+        transHistory.innerHTML = '<p class="text-muted">No transactions yet.</p>';
+        return;
+    }
+
+    transHistory.innerHTML = appState.transactions.map(trans => `
+        <div class="transaction-item ${trans.type}">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="mb-1">${trans.description}</h6>
+                    <small class="text-muted">${new Date(trans.date).toLocaleString()}</small>
+                </div>
+                <div class="text-end">
+                    <h6 class="mb-1 ${trans.type === 'credit' ? 'text-success' : 'text-danger'}">
+                        ${trans.type === 'credit' ? '+' : '-'} $${Math.abs(trans.amount).toFixed(2)}
+                    </h6>
+                    <small class="text-muted">${trans.cardName}</small>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function populateFundCardsSelect() {
+    const select = document.getElementById('fund-card-select');
+    select.innerHTML = '<option value="">Choose a card...</option>';
+    
+    appState.cards.forEach(card => {
+        const option = document.createElement('option');
+        option.value = card.id;
+        option.textContent = `${card.name} (•••• ${card.last4})`;
+        select.appendChild(option);
+    });
+}
+
+// ============================================
+// Card Management Functions
+// ============================================
+
+async function freezeCard(cardId) {
+    try {
+        showLoading(true);
+        const card = appState.cards.find(c => c.id === cardId);
+        
+        const response = await fetch(`${API_BASE_URL}/cards/freeze`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+            },
+            body: JSON.stringify({
+                cardId,
+                isFrozen: !card.isFrozen,
+                userId: localStorage.getItem('userId')
+            })
+        });
+
+        const data = await response.json();
+        
+        if (response.ok) {
+            await loadUserData();
+            showSuccessMessage('cards-section', `Card ${!card.isFrozen ? 'frozen' : 'unfrozen'} successfully`);
+        }
+    } catch (error) {
+        alert('Error: ' + error.message);
+    } finally {
+        showLoading(false);
+    }
+}
+
+async function deleteCard(cardId) {
+    if (!confirm('Are you sure you want to delete this card? This action cannot be undone.')) return;
+
+    try {
+        showLoading(true);
+        
+        const response = await fetch(`${API_BASE_URL}/cards/delete`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+            },
+            body: JSON.stringify({
+                cardId,
+                userId: localStorage.getItem('userId')
+            })
+        });
+
+        const data = await response.json();
+        
+        if (response.ok) {
+            await loadUserData();
+            showSuccessMessage('cards-section', 'Card deleted successfully');
+        } else {
+            alert('Error: ' + data.message);
+        }
+    } catch (error) {
+        alert('Error: ' + error.message);
+    } finally {
+        showLoading(false);
+    }
+}
+
+// ============================================
+// Utility Functions
+// ============================================
+
+function showErrorMessage(elementId, message) {
+    const element = document.getElementById(elementId);
+    element.className = 'alert alert-danger alert-custom';
+    element.textContent = message;
+    element.style.display = 'block';
+}
+
+function showSuccessMessage(elementId, message) {
+    const element = document.getElementById(elementId);
+    element.className = 'alert alert-success alert-custom';
+    element.textContent = message;
+    element.style.display = 'block';
+}
+
+function showAuthSection(show) {
+    document.getElementById('auth-section').style.display = show ? 'block' : 'none';
+    document.getElementById('dashboard-section').style.display = show ? 'none' : 'block';
+    document.getElementById('logout-btn').style.display = show ? 'none' : 'block';
+    document.getElementById('user-display').style.display = show ? 'none' : 'inline';
+}
+
+function showLoading(show) {
+    document.getElementById('loadingOverlay').classList.toggle('active', show);
+}
+
+// ============================================
+// Logout Function
+// ============================================
+
+document.getElementById('logout-btn').addEventListener('click', () => {
+    if (confirm('Are you sure you want to logout?')) {
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('userId');
+        appState.currentUser = null;
+        appState.cards = [];
+        appState.transactions = [];
+        appState.accountBalance = 0;
+        
+        showAuthSection(true);
+        
+        // Reset forms
+        document.getElementById('login-form').reset();
+        document.getElementById('signup-form').reset();
+        document.getElementById('login-tab').click();
+    }
+});
+
+// ============================================
+// Check Authentication on Page Load
+// ============================================
+
+window.addEventListener('DOMContentLoaded', async () => {
+    initializeStripeElements();
+    
+    const token = localStorage.getItem('authToken');
+    const userId = localStorage.getItem('userId');
+    
+    if (token && userId) {
+        try {
+            // Verify token validity
+            const response = await fetch(`${API_BASE_URL}/auth/verify`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                appState.currentUser = data.user;
+                await loadUserData();
+                showAuthSection(false);
+            } else {
+                localStorage.removeItem('authToken');
+                localStorage.removeItem('userId');
+                showAuthSection(true);
+            }
+        } catch (error) {
+            console.error('Auth verification failed:', error);
+            showAuthSection(true);
+        }
+    } else {
+        showAuthSection(true);
+    }
+});
+
+  # Stripe Keys (Live Mode)
+STRIPE_PUBLIC_KEY=pk_live_YOUR_PUBLIC_KEY
+STRIPE_SECRET_KEY=sk_live_YOUR_SECRET_KEY
+STRIPE_WEBHOOK_SECRET=whsec_YOUR_WEBHOOK_SECRET
+
+# MongoDB
+MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/bankpenpal
+
+# JWT Secret
+JWT_SECRET=your_jwt_secret_key_here
+
+# Server
+PORT=5000
+NODE_ENV=production
+
+# API
+API_BASE_URL=https://api.bankpenpal.com  
+
     
 </body>
 </html>
     
 </body>
 </html>
+
+{
+  "name": "bank-penpal-api",
+  "version": "1.0.0",
+  "description": "Bank Penpal Online Banking with Prepaid Cards",
+  "main": "backend.js",
+  "scripts": {
+    "start": "node backend.js",
+    "dev": "nodemon backend.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "stripe": "^11.10.0",
+    "mongoose": "^7.0.0",
+    "jsonwebtoken": "^9.0.0",
+    "bcrypt": "^5.1.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  }
+}
+        
