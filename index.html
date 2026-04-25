@@ -74,5 +74,80 @@
             document.getElementById('signup-message').innerText = 'Signup successful for ' + name;
         };
     </script>
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Banking System</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stripe-v3"></script>
+</head>
+<body>
+    <header>
+        <h1>Welcome to Bank Penpal Online Banking</h1>
+        <nav>
+            <ul>
+                <li><a href="#login">Login</a></li>
+                <li><a href="#register">Register</a></li>
+                <li><a href="#account">Account Management</a></li>
+                <li><a href="#prepaid-cards">Prepaid Cards</a></li>
+                <li><a href="#transactions">Transactions</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="login">
+            <h2>User Login</h2>
+            <form id="login-form">
+                <input type="email" placeholder="Email" required>
+                <input type="password" placeholder="Password" required>
+                <button type="submit">Login</button>
+            </form>
+        </section>
+
+        <section id="register">
+            <h2>User Registration</h2>
+            <form id="registration-form">
+                <input type="text" placeholder="Full Name" required>
+                <input type="email" placeholder="Email" required>
+                <input type="password" placeholder="Password" required>
+                <button type="submit">Register</button>
+            </form>
+        </section>
+
+        <section id="account">
+            <h2>Account Management</h2>
+            <div id="account-details"></div>
+        </section>
+
+        <section id="prepaid-cards">
+            <h2>Prepaid Card Issuance</h2>
+            <button id="issue-card">Issue Prepaid Card</button>
+            <div id="cards-list"></div>
+        </section>
+
+        <section id="transactions">
+            <h2>Transaction Processing</h2>
+            <form id="transaction-form">
+                <input type="number" placeholder="Amount" required>
+                <button type="submit">Make Payment</button>
+            </form>
+            <div id="transaction-history"></div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Bank Penpal. All rights reserved.</p>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
+    
 </body>
 </html>
