@@ -146,6 +146,97 @@
     </footer>
 
     <script src="app.js"></script>
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prepaid Card Issuing System</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://js.stripe.com/v3/"></script>
+</head>
+<body>
+    <h1>Prepaid Card Issuing System</h1>
+    <div id="card-issue-form">
+        <h2>Issue a New Card</h2>
+        <form id="issue-card">
+            <label for="name">Name:</label>
+            <input type="text" id="name" required>
+            <label for="amount">Initial Funding Amount:</label>
+            <input type="number" id="amount" required>
+            <button type="submit">Issue Card</button>
+        </form>
+    </div>
+
+    <div id="card-management">
+        <h2>Manage Your Cards</h2>
+        <ul id="card-list"></ul>
+    </div>
+
+    <div id="balance-tracking">
+        <h2>Your Balance</h2>
+        <p id="balance">$0.00</p>
+    </div>
+
+    <div id="transaction-history">
+        <h2>Transaction History</h2>
+        <ul id="transactions"></ul>
+    </div>
+
+    <script>
+        // Initialize Stripe
+        const stripe = Stripe('your-publishable-key'); // Replace with your actual publishable key
+
+        // Listen for form submissions to issue a card
+        document.getElementById('issue-card').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const name = document.getElementById('name').value;
+            const amount = document.getElementById('amount').value;
+            
+            try {
+                // Card issuance logic with Stripe API
+                const response = await fetch('/issue-card', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, amount })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    alert('Card issued successfully!');
+                    loadCards();
+                } else {
+                    alert('Failed to issue card: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while issuing the card.');
+            }
+        });
+
+        // Function to load card list
+        async function loadCards() {
+            const response = await fetch('/get-cards');
+            const cards = await response.json();
+            const cardList = document.getElementById('card-list');
+            cardList.innerHTML = '';
+            cards.forEach(card => {
+                const li = document.createElement('li');
+                li.textContent = card.name + ' - ' + card.status;
+                cardList.appendChild(li);
+            });
+        }
+
+        // Load cards on page load
+        loadCards();
+
+        // Add more functions for balance tracking and transaction history...
+    </script>
+</body>
+</html>
+
+    
 </body>
 </html>
     
