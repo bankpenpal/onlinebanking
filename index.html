@@ -1431,4 +1431,108 @@ API_BASE_URL=https://api.bankpenpal.com
     "nodemon": "^2.0.20"
   }
 }
-        
+    .navbar {
+    background: linear-gradient(90deg, #4e54c8, #8f94fb);
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.navbar h1 {
+    color: white;
+    font-size: 24px;
+}
+
+.card {
+    background: linear-gradient(to right, #00c6ff, #0072ff);
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin: 15px 0;
+    transition: transform 0.3s;
+}
+
+.card:hover {
+    transform: scale(1.05);
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.form input, .form button {
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.form button {
+    background-color: #4e54c8;
+    color: white;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.form button:hover {
+    background-color: #8f94fb;
+}
+
+@media (max-width: 768px) {
+    .navbar {
+        flex-direction: column;
+    }
+    .card {
+        width: 100%;
+    }
+}
+
+.loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.loading:before {
+    content: '';
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.transaction-history {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    margin: 20px 0;
+}
+
+.status-badge {
+    padding: 5px 10px;
+    border-radius: 15px;
+    color: white;
+    display: inline-block;
+}
+
+.status-badge.success {
+    background-color: green;
+}
+
+.status-badge.error {
+    background-color: red;
+}
+
+.status-badge.pending {
+    background-color: orange;
+}
+    
